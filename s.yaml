@@ -1,0 +1,55 @@
+edition: 3.0.0
+name: open-manus-backend
+access: default
+
+resources:
+  openManusService:
+    component: fc3
+    props:
+      region: cn-beijing
+      code: ./
+      cpu: 8
+      memorySize: 12288
+      diskSize: 512
+      runtime: custom.debian12
+      timeout: 600
+      instanceConcurrency: 100
+      environmentVariables:
+        PATH: /opt/python3.12/bin::/usr/local/bin/apache-maven/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ruby/bin:/opt/bin:/code:/code/bin
+        PYTHONPATH: /opt/python:/code
+        EMBEDDING_TIMEOUT: "600"
+        WORKERS: "1"
+        REGION: cn-beijing
+        CREATE_TABLES: "1"
+        POSTGRES_USER: ""
+        POSTGRES_HOST: ""
+        POSTGRES_DATABASE: ""
+        POSTGRES_PASSWORD: ""
+        EMBEDDING_TOKEN: ""
+        EMBEDDING_URL: ""
+        EMBEDDING_DIM: ""
+        DASHSCOPE_API_KEY: ${shared.dashscopeApiKey}
+        JWT_SECRET: ${shared.JWT_SECRET}
+      customContainerConfig:
+        command:
+          - python
+          - main.py
+        entrypoint:
+          - /bin/sh
+          - -c
+        port: 8000
+      customRuntimeConfig:
+        args: []
+        command:
+          - python
+          - main.py
+        port: 8000
+      instanceLifecycleConfig:
+        preStop:
+          timeout: 5
+        initializer:
+          timeout: 5
+      internetAccess: true
+      logConfig:
+        project: ""
+        logstore: ""
