@@ -1,13 +1,14 @@
-FROM python:3.12-slim
+FROM python:3.12
 
-WORKDIR /app/OpenManus
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN uv venv --python 3.12
 
-RUN apt-get update && apt-get install -y --no-install-recommends git curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && (command -v uv >/dev/null 2>&1 || pip install --no-cache-dir uv)
 
-COPY . .
+WORKDIR /dockerbox
 
-RUN uv pip install --system -r requirements.txt
+COPY ./ ./dockerbox
 
-CMD ["bash"]
+RUN ./venv/scripts/activate
+RUN uv pip install -r requirements.txt
+
+CMD ["python", "main.py"]
