@@ -198,5 +198,10 @@ cython_debug/
 # OSX
 .DS_Store
 
+<<<<<<< HEAD
 #serverless yaml
 s.sample.yaml
+=======
+# node
+node_modules
+>>>>>>> d901a980647e21c23e28bdebf88039677e1a90d3
