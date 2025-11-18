@@ -137,6 +137,17 @@ For unstable multi-agent version, you also can run:
 python run_flow.py
 ```
 
+### Custom Adding Multiple Agents
+
+Currently, besides the general OpenManus Agent, we have also integrated the DataAnalysis Agent, which is suitable for data analysis and data visualization tasks. You can add this agent to `run_flow` in `config.toml`.
+
+```toml
+# Optional configuration for run-flow
+[runflow]
+use_data_analysis_agent = true     # Disabled by default, change to true to activate
+```
+In addition, you need to install the relevant dependencies to ensure the agent runs properly: [Detailed Installation Guide](app/tool/chart_visualization/README.md##Installation)
+
 ## How to contribute
 
 We welcome any friendly suggestions and helpful contributions! Just create issues or submit pull requests.
@@ -163,8 +174,7 @@ Thanks to [PPIO](https://ppinfra.com/user/register?invited_by=OCPKCN&utm_source=
 
 ## Acknowledgement
 
-Thanks to [anthropic-computer-use](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
-and [browser-use](https://github.com/browser-use/browser-use) for providing basic support for this project!
+Thanks to [anthropic-computer-use](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo), [browser-use](https://github.com/browser-use/browser-use) and [crawl4ai](https://github.com/unclecode/crawl4ai) for providing basic support for this project!
 
 Additionally, we are grateful to [AAAJ](https://github.com/metauto-ai/agent-as-a-judge), [MetaGPT](https://github.com/geekan/MetaGPT), [OpenHands](https://github.com/All-Hands-AI/OpenHands) and [SWE-agent](https://github.com/SWE-agent/SWE-agent).
 

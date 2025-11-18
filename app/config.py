@@ -60,6 +60,12 @@ class SearchSettings(BaseModel):
     )
 
 
+class RunflowSettings(BaseModel):
+    use_data_analysis_agent: bool = Field(
+        default=False, description="Enable data analysis agent in run flow"
+    )
+
+
 class BrowserSettings(BaseModel):
     headless: bool = Field(False, description="Whether to run browser in headless mode")
     disable_security: bool = Field(
@@ -96,6 +102,25 @@ class SandboxSettings(BaseModel):
     timeout: int = Field(300, description="Default command timeout (seconds)")
     network_enabled: bool = Field(
         False, description="Whether network access is allowed"
+    )
+
+
+class DaytonaSettings(BaseModel):
+    daytona_api_key: str
+    daytona_server_url: Optional[str] = Field(
+        "https://app.daytona.io/api", description=""
+    )
+    daytona_target: Optional[str] = Field("us", description="enum ['eu', 'us']")
+    sandbox_image_name: Optional[str] = Field("whitezxj/sandbox:0.1.0", description="")
+    sandbox_entrypoint: Optional[str] = Field(
+        "/usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf",
+        description="",
+    )
+    # sandbox_id: Optional[str] = Field(
+    #     None, description="ID of the daytona sandbox to use, if any"
+    # )
+    VNC_password: Optional[str] = Field(
+        "123456", description="VNC password for the vnc service in sandbox"
     )
 
 
@@ -158,6 +183,12 @@ class AppConfig(BaseModel):
         None, description="Search configuration"
     )
     mcp_config: Optional[MCPSettings] = Field(None, description="MCP configuration")
+    run_flow_config: Optional[RunflowSettings] = Field(
+        None, description="Run flow configuration"
+    )
+    daytona_config: Optional[DaytonaSettings] = Field(
+        None, description="Daytona configuration"
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -259,6 +290,11 @@ class Config:
             sandbox_settings = SandboxSettings(**sandbox_config)
         else:
             sandbox_settings = SandboxSettings()
+        daytona_config = raw_config.get("daytona", {})
+        if daytona_config:
+            daytona_settings = DaytonaSettings(**daytona_config)
+        else:
+            daytona_settings = DaytonaSettings()
 
         mcp_config = raw_config.get("mcp", {})
         mcp_settings = None
@@ -269,6 +305,11 @@ class Config:
         else:
             mcp_settings = MCPSettings(servers=MCPSettings.load_server_config())
 
+        run_flow_config = raw_config.get("runflow")
+        if run_flow_config:
+            run_flow_settings = RunflowSettings(**run_flow_config)
+        else:
+            run_flow_settings = RunflowSettings()
         config_dict = {
             "llm": {
                 "default": default_settings,
@@ -281,6 +322,8 @@ class Config:
             "browser_config": browser_settings,
             "search_config": search_settings,
             "mcp_config": mcp_settings,
+            "run_flow_config": run_flow_settings,
+            "daytona_config": daytona_settings,
         }
 
         self._config = AppConfig(**config_dict)
@@ -294,6 +337,10 @@ class Config:
         return self._config.sandbox
 
     @property
+    def daytona(self) -> DaytonaSettings:
+        return self._config.daytona_config
+
+    @property
     def browser_config(self) -> Optional[BrowserSettings]:
         return self._config.browser_config
 
@@ -305,6 +352,11 @@ class Config:
     def mcp_config(self) -> MCPSettings:
         """Get the MCP configuration"""
         return self._config.mcp_config
+
+    @property
+    def run_flow_config(self) -> RunflowSettings:
+        """Get the Run Flow configuration"""
+        return self._config.run_flow_config
 
     @property
     def workspace_root(self) -> Path:
